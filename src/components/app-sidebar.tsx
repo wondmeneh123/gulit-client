@@ -1,39 +1,20 @@
 import * as React from "react"
 import {
-  Bot, DollarSign, GalleryVerticalEnd,
+  Bot, DollarSign,
   LogOut, ReceiptPoundSterlingIcon, SquareTerminal
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
+  SidebarFooter, SidebarRail
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
 import { Link, useLocation } from "react-router-dom"
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Gulit Sacco",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-  ],
-}
+
 
 const menu = [
   { label: "Dashboard", icon: <SquareTerminal />, to: "/home" },

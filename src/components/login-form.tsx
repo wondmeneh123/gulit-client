@@ -10,22 +10,19 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { auth, database } from "@/firebase"
-import { useUser } from "@/context/UserContext"
+import { useAuth } from "@/context/AuthContext"
 import { useNavigate } from "react-router-dom"
-import { doc, getDoc } from "firebase/firestore"
 import { toast } from "sonner"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const { setUser } = useUser()
+  const { login, user } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,20 +30,10 @@ export function LoginForm({
     setError("")
     setLoading(true)
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const userId = userCredential.user.uid
-
-      // Get user data from Firestore
-      const userDoc = await getDoc(doc(database, "users", userId))
-      if (!userDoc.exists()) {
-        throw new Error("User data not found")
-      }
-
-      const userData = userDoc.data()
-      setUser({ ...userCredential.user, ...userData })
-
+      await login(username, password)
+      
       // Redirect based on role
-      if (userData.role === 'borrower') {
+      if (user && user.role === 'BORROWER') {
         navigate("/user")
         toast.success("Welcome back!")
       } else {
@@ -66,7 +53,7 @@ export function LoginForm({
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your username below to login to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -76,14 +63,14 @@ export function LoginForm({
                 <div className="text-sm text-red-500 text-center">{error}</div>
               )}
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   disabled={loading}
                 />
               </div>
