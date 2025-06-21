@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { useUser } from '@/context/UserContext'
+import { useAuth } from '@/context/AuthContext'
 import {
   Home,
   Users,
@@ -44,7 +44,7 @@ const SidebarButton = ({ to, icon, children, isActive }: SidebarButtonProps) => 
 
 export function SidebarNav() {
   const location = useLocation()
-  const { userData, signOut } = useUser()
+  const { user, logout } = useAuth()
 
   const isActive = (path: string) => location.pathname === path
 
@@ -114,7 +114,7 @@ export function SidebarNav() {
   return (
     <div className="flex flex-col gap-2 p-4">
       {menuItems
-        .filter(item => item.roles.includes(userData?.role || ''))
+        .filter(item => item.roles.includes(user?.role || ''))
         .map((item) => (
           <SidebarButton
             key={item.path}
@@ -130,7 +130,7 @@ export function SidebarNav() {
         <Button
           variant="ghost"
           className="w-full justify-start gap-2 text-red-500 hover:text-red-600 hover:bg-red-50"
-          onClick={signOut}
+          onClick={logout}
         >
           <LogOut className="h-4 w-4" />
           Sign Out
