@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { apiClient } from '@/config/api'
-import { CreditCard, Calendar, DollarSign, User2, TrendingUp } from "lucide-react";
+import { CreditCard, DollarSign, User2 } from "lucide-react"
 
 interface Loan {
   id: string

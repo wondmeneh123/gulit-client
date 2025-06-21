@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ChevronLeft, ChevronRight, Calendar, TrendingUp, AlertTriangle, CheckCircle, DollarSign } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react'
 import { apiClient } from '@/config/api'
 
 interface Payment {
@@ -59,18 +59,6 @@ const Reports = () => {
     }
   }
 
-  // Helper to check if a loan has an approved payment on selected date
-  const isPaidOnSelectedDate = (loan: Loan) => {
-    if (!loan.payments) return false
-    const selectedDateObj = new Date(selectedDate)
-    return loan.payments.some(payment => {
-      if (payment.status !== 'APPROVED') return false
-      const paidAt = new Date(payment.paidAt)
-      return paidAt.getFullYear() === selectedDateObj.getFullYear() &&
-        paidAt.getMonth() === selectedDateObj.getMonth() &&
-        paidAt.getDate() === selectedDateObj.getDate()
-    })
-  }
 
   // Calculate unpaid days using the formula: x - y
   // x = days since loan started (selected_date - start_date) - DYNAMIC CURRENT DATE
