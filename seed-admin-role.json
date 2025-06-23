@@ -1,0 +1,11 @@
+{
+  "adminUser": {
+   
+    "username": "abinet",
+    "fullName": "Abinet",
+    "email": "abinet@gulit-mini.com",
+    "role": "ADMIN",
+    "password": "admin123456"
+    
+  }
+} 
