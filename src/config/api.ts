@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   // Use environment variable if available, otherwise fallback to localhost for development
-  BASE_URL: 'http://164.160.187.143:3002/api',
+  BASE_URL: 'https://admin.alphatech.et/3002/api',
   TIMEOUT: 10000, // 10 seconds
 };
 

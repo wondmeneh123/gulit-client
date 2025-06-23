@@ -118,6 +118,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
       
+      console.log('Registration URL:', `${apiClient.defaults.baseURL}users/register`);
+      console.log('Registration data:', { username, fullName, password, role });
+      
       const response = await apiClient.post('/users/register', {
         username,
         fullName,
