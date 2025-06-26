@@ -172,7 +172,7 @@ export function LoanTable() {
 
   const handleUpdate = (loan: Loan) => {
     setSelectedLoan(loan)
-    setUpdateAmount(loan.paidLoan.toString())
+    setUpdateAmount('0')
     setIsUpdateOpen(true)
   }
 
@@ -203,6 +203,7 @@ export function LoanTable() {
       // Refresh loans to get updated data
       await fetchLoans()
       setIsUpdateOpen(false)
+      setUpdateAmount('0')
     } catch (error) {
       console.error('Error updating payment:', error)
     }
@@ -216,6 +217,7 @@ export function LoanTable() {
 
       // Refresh loans to get updated data
       await fetchLoans()
+      setIsViewOpen(false)
     } catch (error) {
       console.error('Error approving payment:', error)
     }
@@ -282,6 +284,13 @@ export function LoanTable() {
     return new Date(dateString).toLocaleDateString()
   }
 
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -342,9 +351,7 @@ export function LoanTable() {
               <TableHead onClick={() => handleSort('remainingDays')} className="cursor-pointer text-xs md:text-sm whitespace-nowrap">
                 Days {sortField === 'remainingDays' && (sortDirection === 'asc' ? '↑' : '↓')}
               </TableHead>
-              <TableHead onClick={() => handleSort('status')} className="cursor-pointer text-xs md:text-sm whitespace-nowrap">
-                Status {sortField === 'status' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </TableHead>
+             
               <TableHead className="text-xs md:text-sm whitespace-nowrap">Remaining</TableHead>
               <TableHead className="text-xs md:text-sm whitespace-nowrap">Actions</TableHead>
             </TableRow>
@@ -362,22 +369,16 @@ export function LoanTable() {
               paginatedLoans.map((loan) => (
                 <TableRow key={loan.id}>
                   <TableCell className="text-xs md:text-sm">{loan.fullName}</TableCell>
-                  <TableCell className="text-xs md:text-sm">{loan.requestedAmount} Br</TableCell>
-                  <TableCell className="text-blue-500 text-xs md:text-sm">{loan.totalToPay} Br</TableCell>
-                  <TableCell className="text-xs md:text-sm">{loan.dailyPayment} Br</TableCell>
-                  <TableCell className="text-purple-500 text-xs md:text-sm">{loan.paidLoan} Br</TableCell>
+                  <TableCell className="text-xs md:text-sm">{formatCurrency(loan.requestedAmount)} Br</TableCell>
+                  <TableCell className="text-blue-500 text-xs md:text-sm">{formatCurrency(loan.totalToPay)} Br</TableCell>
+                  <TableCell className="text-xs md:text-sm">{formatCurrency(loan.dailyPayment)} Br</TableCell>
+                  <TableCell className="text-purple-500 text-xs md:text-sm">{formatCurrency(loan.paidLoan)} Br</TableCell>
                   <TableCell className="text-xs md:text-sm">{formatDate(loan.startDate)}</TableCell>
                   <TableCell className="text-xs md:text-sm">{formatDate(loan.expectDate)}</TableCell>
                   <TableCell className="text-xs md:text-sm">{loan.remainingDays}</TableCell>
-                  <TableCell>
-                    <ProtectedStatus 
-                      status={loan.status} 
-                      loanId={loan.id}
-                      onStatusChange={(newStatus) => handleStatusChange(loan.id, newStatus)}
-                    />
-                  </TableCell>
+                 
                   <TableCell className="text-red-500 text-xs md:text-sm">
-                    {((loan.remainingDays * loan.dailyPayment)).toFixed(2)} Br
+                    {formatCurrency((loan.remainingDays * loan.dailyPayment))} Br
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1 md:gap-2">
@@ -464,31 +465,31 @@ export function LoanTable() {
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Requested Amount</Label>
-                  <p className="text-xs md:text-sm">{selectedLoan.requestedAmount} Br</p>
+                  <p className="text-xs md:text-sm">{formatCurrency(selectedLoan.requestedAmount)} Br</p>
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Deduction (10%)</Label>
-                  <p className="text-red-500 text-xs md:text-sm">-{selectedLoan.deduction} Br</p>
+                  <p className="text-red-500 text-xs md:text-sm">-{formatCurrency(selectedLoan.deduction)} Br</p>
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Amount Received</Label>
-                  <p className="text-green-500 text-xs md:text-sm">{selectedLoan.actualAmount} Br</p>
+                  <p className="text-green-500 text-xs md:text-sm">{formatCurrency(selectedLoan.actualAmount)} Br</p>
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Total to Pay</Label>
-                  <p className="text-blue-500 text-xs md:text-sm">{selectedLoan.totalToPay} Br</p>
+                  <p className="text-blue-500 text-xs md:text-sm">{formatCurrency(selectedLoan.totalToPay)} Br</p>
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Daily Payment</Label>
-                  <p className="text-xs md:text-sm">{selectedLoan.dailyPayment} Br</p>
+                  <p className="text-xs md:text-sm">{formatCurrency(selectedLoan.dailyPayment)} Br</p>
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Unpaid Payment</Label>
-                  <p className="text-xs md:text-sm">{(selectedLoan.remainingDays * selectedLoan.dailyPayment).toFixed(2)} Br</p>
+                  <p className="text-xs md:text-sm">{formatCurrency((selectedLoan.remainingDays * selectedLoan.dailyPayment))} Br</p>
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Paid Amount</Label>
-                  <p className="text-purple-500 text-xs md:text-sm">{selectedLoan.paidLoan} Br</p>
+                  <p className="text-purple-500 text-xs md:text-sm">{formatCurrency(selectedLoan.paidLoan)} Br</p>
                 </div>
                 <div>
                   <Label className="text-xs md:text-sm">Start Date</Label>
@@ -502,16 +503,7 @@ export function LoanTable() {
                   <Label className="text-xs md:text-sm">Remaining Days</Label>
                   <p className="text-xs md:text-sm">{selectedLoan.remainingDays}</p>
                 </div>
-                <div>
-                  <Label className="text-xs md:text-sm">Status</Label>
-                  <p className={`px-2 py-1 rounded-full text-xs inline-block ${
-                    selectedLoan.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                    selectedLoan.status === 'OVERDUE' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {selectedLoan.status}
-                  </p>
-                </div>
+               
               </div>
 
               {/* Payment History */}
@@ -539,7 +531,7 @@ export function LoanTable() {
                               <TableCell className={`text-xs md:text-sm ${
                                 payment.status === 'APPROVED' ? 'text-green-500' : 'text-yellow-500'
                               }`}>
-                                {payment.amount} Br
+                                {formatCurrency(payment.amount)} Br
                               </TableCell>
                               <TableCell className="text-xs md:text-sm">{payment.paymentBy}</TableCell>
                               <TableCell className="text-xs md:text-sm">{new Date(payment.paidAt).toLocaleString()}</TableCell>
@@ -568,9 +560,9 @@ export function LoanTable() {
                     </Table>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Total Approved Payments: {selectedLoan.payments
+                    Total Approved Payments: {formatCurrency(selectedLoan.payments
                       .filter(p => p.status === 'APPROVED')
-                      .reduce((sum, p) => sum + p.amount, 0)} Br
+                      .reduce((sum, p) => sum + p.amount, 0))} Br
                   </div>
                 </div>
               )}
@@ -588,10 +580,6 @@ export function LoanTable() {
           {selectedLoan &&
             <form onSubmit={handleUpdateSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm">Current Paid Amount</Label>
-                <p className="text-purple-500 text-xs md:text-sm">{selectedLoan.paidLoan} Br</p>
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="updateAmount" className="text-xs md:text-sm">New Paid Amount</Label>
                 <Input
                   id="updateAmount"
@@ -606,15 +594,15 @@ export function LoanTable() {
               </div>
               <div className="space-y-2">
                 <Label className="text-xs md:text-sm">Total to Pay</Label>
-                <p className="text-blue-500 text-xs md:text-sm">{selectedLoan.totalToPay} Br</p>
+                <p className="text-blue-500 text-xs md:text-sm">{formatCurrency(selectedLoan.totalToPay)} Br</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-xs md:text-sm">Daily Payment</Label>
-                <p className="text-xs md:text-sm">{selectedLoan.dailyPayment} Br</p>
+                <p className="text-xs md:text-sm">{formatCurrency(selectedLoan.dailyPayment)} Br</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-xs md:text-sm">Remaining Amount</Label>
-                <p className="text-red-500 text-xs md:text-sm">{selectedLoan.unpaidLoan} Br</p>
+                <p className="text-red-500 text-xs md:text-sm">{formatCurrency(selectedLoan.unpaidLoan)} Br</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-xs md:text-sm">Remaining Days</Label>
@@ -642,9 +630,9 @@ export function LoanTable() {
               <div><b>Default Password:</b> 12345678</div>
               <hr />
               <div><b>Loan ID:</b> {printLoan.loanId}</div>
-              <div><b>Loan Amount:</b> {printLoan.loanAmount} Br</div>
-              <div><b>Daily Payment:</b> {printLoan.dailyPayment} Br</div>
-              <div><b>Total to Pay:</b> {printLoan.totalToPay} Br</div>
+              <div><b>Loan Amount:</b> {formatCurrency(printLoan.loanAmount)} Br</div>
+              <div><b>Daily Payment:</b> {formatCurrency(printLoan.dailyPayment)} Br</div>
+              <div><b>Total to Pay:</b> {formatCurrency(printLoan.totalToPay)} Br</div>
               <div><b>Start Date:</b> {new Date(printLoan.startDate).toLocaleDateString()}</div>
               <div><b>Expected End:</b> {new Date(printLoan.expectDate).toLocaleDateString()}</div>
               <div><b>Status:</b> {printLoan.status}</div>
