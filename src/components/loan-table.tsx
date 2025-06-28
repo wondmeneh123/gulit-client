@@ -64,7 +64,7 @@ export function LoanTable() {
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null)
   const [isViewOpen, setIsViewOpen] = useState(false)
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
-  const [updateAmount, setUpdateAmount] = useState('')
+  const [newPaymentAmount, setNewPaymentAmount] = useState('')
   const [printLoan, setPrintLoan] = useState<Loan | null>(null)
   const [printUser, setPrintUser] = useState<any | null>(null)
   const [showPrintDialog, setShowPrintDialog] = useState(false)
@@ -102,25 +102,28 @@ export function LoanTable() {
     setIsViewOpen(true)
   }
 
-  const handleUpdate = (loan: Loan) => {
+  const handleAddPayment = (loan: Loan) => {
     setSelectedLoan(loan)
-    setUpdateAmount('0')
+    setNewPaymentAmount('')
     setIsUpdateOpen(true)
   }
 
-  const handleUpdateSubmit = async (e: React.FormEvent) => {
+  const handleAddPaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedLoan || !user) return
 
     try {
-      const newPaidAmount = Number(updateAmount)
-      const existingPaidAmount = selectedLoan.paidLoan
-      const additionalPayment = newPaidAmount - existingPaidAmount
+      const paymentAmount = Number(newPaymentAmount)
+      
+      if (paymentAmount <= 0) {
+        alert('Payment amount must be greater than 0')
+        return
+      }
 
-      // Create new payment
+      // Create new payment with the actual payment amount
       const paymentResponse = await apiClient.post('/payments', {
         loanId: selectedLoan.id,
-        amount: additionalPayment,
+        amount: paymentAmount,
         paymentBy: user.fullName,
         userId: user.id
       });
@@ -135,7 +138,7 @@ export function LoanTable() {
       // Refresh loans to get updated data
       await fetchLoans()
       setIsUpdateOpen(false)
-      setUpdateAmount('0')
+      setNewPaymentAmount('')
     } catch (error) {
       console.error('Error updating payment:', error)
     }
@@ -326,7 +329,8 @@ export function LoanTable() {
                         variant="outline" 
                         size="icon" 
                         className="h-6 w-6 md:h-8 md:w-8"
-                        onClick={() => handleUpdate(loan)}
+                        onClick={() => handleAddPayment(loan)}
+                        title="Add New Payment"
                       >
                         <Pencil className="h-3 w-3 md:h-4 md:w-4" />
                       </Button>
@@ -507,22 +511,24 @@ export function LoanTable() {
       <Dialog open={isUpdateOpen} onOpenChange={setIsUpdateOpen}>
         <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[80vw] lg:w-[60vw] max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="text-lg md:text-xl">Update Loan Payment</DialogTitle>
+            <DialogTitle className="text-lg md:text-xl">Add New Payment</DialogTitle>
           </DialogHeader>
           {selectedLoan &&
-            <form onSubmit={handleUpdateSubmit} className="space-y-4">
+            <form onSubmit={handleAddPaymentSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="updateAmount" className="text-xs md:text-sm">New Paid Amount</Label>
+                <Label htmlFor="newPaymentAmount" className="text-xs md:text-sm">New Payment Amount</Label>
                 <Input
-                  id="updateAmount"
+                  id="newPaymentAmount"
                   type="number"
-                  value={updateAmount}
-                  onChange={(e) => setUpdateAmount(e.target.value)}
+                  value={newPaymentAmount}
+                  onChange={(e) => setNewPaymentAmount(e.target.value)}
                   min="0"
                   step="0.01"
                   required
+                  placeholder="Enter payment amount"
                   className="text-xs md:text-sm"
                 />
+                <p className="text-xs text-muted-foreground">Enter the amount being paid now</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-xs md:text-sm">Total to Pay</Label>
@@ -533,6 +539,10 @@ export function LoanTable() {
                 <p className="text-xs md:text-sm">{formatCurrency(selectedLoan.dailyPayment)} Br</p>
               </div>
               <div className="space-y-2">
+                <Label className="text-xs md:text-sm">Currently Paid Amount</Label>
+                <p className="text-purple-500 text-xs md:text-sm">{formatCurrency(selectedLoan.paidLoan)} Br</p>
+              </div>
+              <div className="space-y-2">
                 <Label className="text-xs md:text-sm">Remaining Amount</Label>
                 <p className="text-red-500 text-xs md:text-sm">{formatCurrency(selectedLoan.unpaidLoan)} Br</p>
               </div>
@@ -541,7 +551,7 @@ export function LoanTable() {
                 <p className="text-orange-500 text-xs md:text-sm">{selectedLoan.remainingDays} days</p>
               </div>
               <Button type="submit" className="w-full text-xs md:text-sm">
-                Update Payment
+                Add Payment
               </Button>
             </form>
           }
