@@ -3,13 +3,7 @@ import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+
 import {
   Table,
   TableBody,
@@ -57,55 +51,8 @@ interface Loan {
   assignedCashier: string
 }
 
-interface ProtectedStatusProps {
-  status: Loan['status']
-  loanId: string
-  onStatusChange?: (newStatus: Loan['status']) => void
-}
 
-function ProtectedStatus({ status, onStatusChange }: ProtectedStatusProps) {
-  const { user } = useAuth()
-  const isAdmin = user?.role === 'ADMIN'
 
-  // Mapping for display
-  const statusOptions = [
-    { value: 'PENDING', label: 'Pending' },
-    { value: 'APPROVED', label: 'Approved' },
-    { value: 'DENIED', label: 'Denied' },
-    { value: 'COMPLETED', label: 'Completed' },
-    { value: 'OVERDUE', label: 'Overdue' },
-  ];
-
-  if (!isAdmin) {
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs ${
-        status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-        status === 'OVERDUE' ? 'bg-red-100 text-red-800' :
-        status === 'DENIED' ? 'bg-red-100 text-red-800' :
-        status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-        'bg-yellow-100 text-yellow-800'
-      }`}>
-        {statusOptions.find(opt => opt.value === status)?.label || status}
-      </span>
-    )
-  }
-
-  return (
-    <Select
-      value={status}
-      onValueChange={(value: string) => onStatusChange?.(value.toUpperCase() as Loan['status'])}
-    >
-      <SelectTrigger className="w-[120px]">
-        <SelectValue>{statusOptions.find(opt => opt.value === status)?.label || status}</SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {statusOptions.map(opt => (
-          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
-}
 
 export function LoanTable() {
   const { user } = useAuth()
@@ -148,22 +95,7 @@ export function LoanTable() {
     }
   }
 
-  const handleStatusChange = async (loanId: string, newStatus: string) => {
-    try {
-      await apiClient.patch(`/loans/${loanId}/status`, 
-        { status: newStatus }
-      );
-      
-      // Update local state
-      setLoans(loans.map(loan => 
-        loan.id === loanId 
-          ? { ...loan, status: newStatus as Loan['status'] }
-          : loan
-      ))
-    } catch (error) {
-      console.error('Error updating loan status:', error)
-    }
-  }
+
 
   const handleView = (loan: Loan) => {
     setSelectedLoan(loan)
