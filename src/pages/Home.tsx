@@ -109,7 +109,7 @@ const Home = () => {
       const token = localStorage.getItem("token");
       if (user.role === "CASHIER") {
         // Fetch all loans and filter for assignedCashier === user.id
-        const response = await axios.get("http://164.160.187.143:3002/api/loans", {
+        const response = await axios.get("http://92.113.150.169:5000/loans", {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         const allLoans = response.data;
@@ -146,7 +146,7 @@ const Home = () => {
         // Use backend stats for admin/other roles
         try {
           const response = await axios.get(
-            "http://164.160.187.143:3002/api/loans/dashboard",
+            "http://92.113.150.169:5000/loans/dashboard",
             {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             }
@@ -167,7 +167,7 @@ const Home = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://164.160.187.143:3002/api/payments/detailed",
+          "http://92.113.150.169:5000/payments/detailed",
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           }
@@ -258,7 +258,7 @@ const Home = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://164.160.187.143:3002/api/payments/cashier/details",
+          "http://92.113.150.169:5000/payments/cashier/details",
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           }

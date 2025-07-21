@@ -1,9 +1,12 @@
 // API Configuration
 export const API_CONFIG = {
   // Use environment variable if available, otherwise fallback to localhost for development
-  BASE_URL: 'https://admin.alphatech.et/3002/api',
+  BASE_URL: 'http://92.113.150.169:5000/api',
   TIMEOUT: 10000, // 10 seconds
+
 };
+
+// const baseURL = 'https://admin.alphatech.et/3002/api'
 
 // Create axios instance with default configuration
 import axios from 'axios';
