@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
   // Use environment variable if available, otherwise fallback to localhost for development
-  BASE_URL: 'http://92.113.150.169:5000/api',
+  BASE_URL: 'https://gulit-api.abido.dev/api',
   TIMEOUT: 10000, // 10 seconds
 
 };
