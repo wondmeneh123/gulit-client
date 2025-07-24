@@ -109,7 +109,7 @@ const Home = () => {
       const token = localStorage.getItem("token");
       if (user.role === "CASHIER") {
         // Fetch all loans and filter for assignedCashier === user.id
-        const response = await axios.get("https://gulit-api.abido.dev/loans", {
+        const response = await axios.get("https://gulit-api.abido.dev/api/loans", {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         const allLoans = response.data;
@@ -146,7 +146,7 @@ const Home = () => {
         // Use backend stats for admin/other roles
         try {
           const response = await axios.get(
-            "https://gulit-api.abido.dev/loans/dashboard",
+            "https://gulit-api.abido.dev/api/loans/dashboard",
             {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             }
@@ -167,7 +167,7 @@ const Home = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://gulit-api.abido.dev/payments/detailed",
+          "https://gulit-api.abido.dev/api/payments/detailed",
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           }
@@ -258,7 +258,7 @@ const Home = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://gulit-api.abido.dev/payments/cashier/details",
+          "https://gulit-api.abido.dev/api/payments/cashier/details",
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           }
