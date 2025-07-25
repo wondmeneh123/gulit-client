@@ -62,7 +62,6 @@ export function LoanTable() {
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [newPaymentAmount, setNewPaymentAmount] = useState("");
   const [printLoan, setPrintLoan] = useState<Loan | null>(null);
   const [printUser, setPrintUser] = useState<any | null>(null);
   const [showPrintDialog, setShowPrintDialog] = useState(false);
@@ -100,7 +99,6 @@ export function LoanTable() {
 
   const handleAddPayment = (loan: Loan) => {
     setSelectedLoan(loan);
-    setNewPaymentAmount("");
     setIsUpdateOpen(true);
   };
 
