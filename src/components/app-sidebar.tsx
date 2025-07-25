@@ -20,7 +20,7 @@ const menu = [
   { label: "Dashboard", icon: <SquareTerminal />, to: "/home" },
   { label: "Employees", icon: <Bot />, to: "/cashier", roles: ["ADMIN"] },
   { label: "Loans", icon: <DollarSign />, to: "/loans" },
-  { label: "Reports", icon: <ReceiptPoundSterlingIcon />, to: "/reports" },
+  { label: "Reports", icon: <ReceiptPoundSterlingIcon />, to: "/reports", roles: ["ADMIN", "ACCOUNTANT"] },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

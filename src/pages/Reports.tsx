@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ChevronLeft, ChevronRight, Calendar, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react'
 import { apiClient } from '@/config/api'
+import { useAuth } from '@/context/AuthContext'
 
 interface Payment {
   id: string
@@ -38,6 +39,7 @@ interface Loan {
 }
 
 const Reports = () => {
+  const { user } = useAuth()
   const [loans, setLoans] = useState<Loan[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
@@ -110,8 +112,13 @@ const Reports = () => {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="space-y-2">
+      {user?.role === "CASHIER" ? (
+        <div>
+          <h1>You are not authorized to view this page</h1>
+        </div>
+      ) : (
+        <div className="space-y-6 p-6">
+           <div className="space-y-2">
         <h1 className="text-2xl font-bold">Loan Payment Reports</h1>
         <p className="text-muted-foreground">Track loan performance and payment status</p>
       </div>
@@ -319,8 +326,10 @@ const Reports = () => {
           )}
         </CardContent>
       </Card>
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Reports
+export default Reports;
