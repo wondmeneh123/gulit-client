@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { apiClient } from "@/config/api";
 import { CreateLoan } from "./create-loan";
-import { Eye, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, Pencil, ChevronLeft, ChevronRight, Edit2 } from "lucide-react";
 
 interface Payment {
   id: string;
@@ -171,6 +171,35 @@ export function LoanTable() {
         setPrintUser(null);
         setShowPrintDialog(true);
       }
+    }
+  };
+
+  const handleEditLoan = (loan: Loan) => {
+    setSelectedLoan(loan);
+    setIsUpdateOpen(true); // Reuse isUpdateOpen for edit dialog
+  };
+
+  const handleEditLoanSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedLoan || !user) return;
+
+    try {
+      const updatedLoanData = {
+        requestedAmount: selectedLoan.requestedAmount,
+        deduction: selectedLoan.deduction,
+        actualAmount: selectedLoan.actualAmount,
+        totalToPay: selectedLoan.totalToPay,
+        dailyPayment: selectedLoan.dailyPayment,
+        expectDate: selectedLoan.expectDate,
+        status: selectedLoan.status,
+      };
+
+      await apiClient.patch(`/loans/${selectedLoan.id}`, updatedLoanData);
+      await fetchLoans();
+      setIsUpdateOpen(false);
+      setSelectedLoan(null);
+    } catch (error) {
+      console.error("Error updating loan:", error);
     }
   };
 
@@ -416,6 +445,17 @@ export function LoanTable() {
                           <Pencil className="h-3 w-3 md:h-4 md:w-4" />
                         </Button>
                       )}
+                      {user?.role !== "ACCOUNTANT" && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-6 w-6 md:h-8 md:w-8"
+                          onClick={() => handleEditLoan(loan)}
+                          title="Edit Loan"
+                        >
+                          <Edit2 className="h-3 w-3 md:h-4 md:w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="icon"
@@ -657,31 +697,51 @@ export function LoanTable() {
         <DialogContent className="w-[95vw] sm:w-[90vw] md:w-[80vw] lg:w-[60vw] max-w-3xl">
           <DialogHeader>
             <DialogTitle className="text-lg md:text-xl">
-              Add New Payment
+              Edit Loan Amount
             </DialogTitle>
           </DialogHeader>
           {selectedLoan && (
-            <form onSubmit={handleAddPaymentSubmit} className="space-y-4">
+            <form onSubmit={handleEditLoanSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label
-                  htmlFor="newPaymentAmount"
-                  className="text-xs md:text-sm"
-                >
-                  New Payment Amount
+                <Label htmlFor="requestedAmount" className="text-xs md:text-sm">
+                  Requested Amount
                 </Label>
                 <Input
-                  id="newPaymentAmount"
+                  id="requestedAmount"
                   type="number"
-                  value={newPaymentAmount}
-                  onChange={(e) => setNewPaymentAmount(e.target.value)}
+                  value={selectedLoan.requestedAmount}
+                  onChange={(e) => {
+                    const requestedAmount = Number(e.target.value);
+                    const deduction = requestedAmount * 0.15;
+                    const actualAmount = requestedAmount - deduction;
+                    const totalToPay = requestedAmount * 1.15;
+                    const dailyPayment = totalToPay / 105;
+                    setSelectedLoan({
+                      ...selectedLoan,
+                      requestedAmount,
+                      deduction,
+                      actualAmount,
+                      totalToPay,
+                      dailyPayment,
+                    });
+                  }}
                   min="0"
                   step="0.01"
                   required
-                  placeholder="Enter payment amount"
+                  placeholder="Enter requested amount"
                   className="text-xs md:text-sm"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Enter the amount being paid now
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs md:text-sm">Deduction (15%)</Label>
+                <p className="text-red-500 text-xs md:text-sm">
+                  -{formatCurrency(selectedLoan.deduction)} Br
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs md:text-sm">Amount Received</Label>
+                <p className="text-green-500 text-xs md:text-sm">
+                  {formatCurrency(selectedLoan.actualAmount)} Br
                 </p>
               </div>
               <div className="space-y-2">
@@ -696,28 +756,8 @@ export function LoanTable() {
                   {formatCurrency(selectedLoan.dailyPayment)} Br
                 </p>
               </div>
-              <div className="space-y-2">
-                <Label className="text-xs md:text-sm">
-                  Currently Paid Amount
-                </Label>
-                <p className="text-purple-500 text-xs md:text-sm">
-                  {formatCurrency(selectedLoan.paidLoan)} Br
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs md:text-sm">Remaining Amount</Label>
-                <p className="text-red-500 text-xs md:text-sm">
-                  {formatCurrency(selectedLoan.unpaidLoan)} Br
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs md:text-sm">Remaining Days</Label>
-                <p className="text-orange-500 text-xs md:text-sm">
-                  {selectedLoan.remainingDays} days
-                </p>
-              </div>
               <Button type="submit" className="w-full text-xs md:text-sm">
-                Add Payment
+                Save Changes
               </Button>
             </form>
           )}
