@@ -104,41 +104,41 @@ export function LoanTable() {
     setIsUpdateOpen(true);
   };
 
-  const handleAddPaymentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedLoan || !user) return;
+  // const handleAddPaymentSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!selectedLoan || !user) return;
 
-    try {
-      const paymentAmount = Number(newPaymentAmount);
+  //   try {
+  //     const paymentAmount = Number(newPaymentAmount);
 
-      if (paymentAmount <= 0) {
-        alert("Payment amount must be greater than 0");
-        return;
-      }
+  //     if (paymentAmount <= 0) {
+  //       alert("Payment amount must be greater than 0");
+  //       return;
+  //     }
 
-      // Create new payment with the actual payment amount
-      const paymentResponse = await apiClient.post("/payments", {
-        loanId: selectedLoan.id,
-        amount: paymentAmount,
-        paymentBy: user.fullName,
-        userId: user.id,
-      });
+  //     // Create new payment with the actual payment amount
+  //     const paymentResponse = await apiClient.post("/payments", {
+  //       loanId: selectedLoan.id,
+  //       amount: paymentAmount,
+  //       paymentBy: user.fullName,
+  //       userId: user.id,
+  //     });
 
-      // If user is accountant, approve the payment immediately
-      if (user.role === "ACCOUNTANT") {
-        await apiClient.patch(`/payments/${paymentResponse.data.id}`, {
-          status: "APPROVED",
-        });
-      }
+  //     // If user is accountant, approve the payment immediately
+  //     if (user.role === "ACCOUNTANT") {
+  //       await apiClient.patch(`/payments/${paymentResponse.data.id}`, {
+  //         status: "APPROVED",
+  //       });
+  //     }
 
-      // Refresh loans to get updated data
-      await fetchLoans();
-      setIsUpdateOpen(false);
-      setNewPaymentAmount("");
-    } catch (error) {
-      console.error("Error updating payment:", error);
-    }
-  };
+  //     // Refresh loans to get updated data
+  //     await fetchLoans();
+  //     setIsUpdateOpen(false);
+  //     setNewPaymentAmount("");
+  //   } catch (error) {
+  //     console.error("Error updating payment:", error);
+  //   }
+  // };
 
   const handleApprovePayment = async (paymentId: string) => {
     try {
