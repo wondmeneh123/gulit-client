@@ -225,6 +225,7 @@ export function LoanTable() {
       maximumFractionDigits: 2
     })
   }
+  console.log(loans)
 
   return (
     <div className="space-y-4">
